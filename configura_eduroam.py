@@ -58,6 +58,25 @@ CipherString = DEFAULT:@SECLEVEL=1
     else:
         print("[-] As regras do OpenSSL já estavam configuradas corretamente.")
 
+def desativa_powersave():
+    print("[*] Verificando configurações de economia de energia do Wi-Fi...")
+    caminho_dir = "/etc/NetworkManager/conf.d"
+    caminho_conf = f"{caminho_dir}/default-wifi-powersave-on.conf"
+    
+    # O valor 2 desativa a economia de energia (3 mantém ativado)
+    conteudo_desativado = "[connection]\nwifi.powersave = 2\n"
+    
+    try:
+        # Garante que o diretório existe
+        os.makedirs(caminho_dir, exist_ok=True)
+        
+        # Sobrescreve o arquivo com a configuração otimizada
+        with open(caminho_conf, "w") as f:
+            f.write(conteudo_desativado)
+        print("[+] Economia de energia do Wi-Fi desativada para evitar lentidão e quedas.")
+    except Exception as e:
+        print(f"[-] Erro ao tentar alterar o powersave: {e}")
+
 def configura_rede(usuario, senha):
     print("[*] Limpando configurações antigas da eduroam...")
     subprocess.run(["nmcli", "connection", "delete", "eduroam"], stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
@@ -102,6 +121,7 @@ def main():
     senha = getpass.getpass("Digite sua senha (ela ficará oculta enquanto você digita): ")
 
     corrige_openssl()
+    desativa_powersave()
     configura_rede(usuario, senha)
     reinicia_e_conecta()
 
