@@ -11,6 +11,25 @@ Isso não é um erro de driver ou de senha, mas sim um **bloqueio de segurança 
 2. **Exigência Estrita de Certificados:** O NetworkManager do Linux exige a validação do certificado CA da instituição, que muitas vezes conflita com as cadeias da RNP (Rede Nacional de Ensino e Pesquisa).
 3. **Validação de Domínio:** Alguns servidores RADIUS rejeitam subdomínios de alunos (como `@discente.instituicao.br`), aceitando apenas o domínio base.
 
+## 💻 Compatibilidade de Hardware e Sistema
+
+Este script atua na camada do sistema (NetworkManager e OpenSSL) e é **agnóstico de marca**, o que significa que ele beneficia diferentes fabricantes de placas de rede, mas de maneiras distintas. 
+
+O script foi projetado para ser compatível e resolver problemas específicos dos seguintes hardwares/sistemas:
+
+### Compatibilidade de Hardware (Placas Wi-Fi)
+- **Placas Intel (Séries Wi-Fi 6 AX200, AX201, AX210, CNVi - ex: Alder Lake):** 
+  - *Problema resolvido:* Chips modernos da Intel possuem bugs conhecidos ao lidar com a funcionalidade *Protected Management Frames (PMF)* em roteadores antigos (WPA2-Enterprise). O script força a desativação do PMF, impedindo que a placa Intel seja "expulsa" silenciosamente da rede pela controladora.
+- **Placas Realtek, Broadcom e Qualcomm Atheros:**
+  - *Problema resolvido:* Estas placas sofrem com lentidão severa, *ping* alto e desconexões quando o Linux tenta colocá-las em modo de suspensão para poupar bateria. O script injeta a regra `wifi.powersave = 2`, forçando a placa a operar em performance máxima constante e estabilizando a rede.
+
+### Compatibilidade de Sistema Operacional (OS)
+O *patch* de criptografia deste script é necessário para qualquer distribuição Linux recente que venha com o **OpenSSL 3** pré-instalado, o que inclui as versões lançadas a partir de meados de 2022:
+- **Ubuntu e baseados (Pop!_OS, Linux Mint, Zorin OS):** Versões 22.04 LTS, 24.04 LTS e superiores.
+- **Debian:** Versão 12 (Bookworm) e superiores.
+- **Fedora Workstation:** Versão 36 e superiores.
+- **Arch Linux / Manjaro:** Qualquer instalação atualizada (Rolling Release).
+
 ## 🛠️ O Que o Script Faz?
 
 O `configura_eduroam.py` atua diretamente na raiz do problema sem comprometer a estabilidade do sistema operacional. O script executa as seguintes etapas:
